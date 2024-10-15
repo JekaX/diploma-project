@@ -1,0 +1,160 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    background: linear-gradient(109.6deg, rgb(0, 0, 0) 11.2%, rgb(11, 132, 145) 91.1%);
+}
+
+.card {
+    height: 800px;
+    border-radius: 15px !important;
+    background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.msg_card_body {
+    overflow-y: auto;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+    border-bottom: 0 !important;
+}
+
+.card-footer {
+    border-radius: 0 0 15px 15px !important;
+    border-top: 0 !important;
+}
+
+.type_msg {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    border: 0 !important;
+    color: white !important;
+    height: 60px !important;
+    overflow-y: auto;
+}
+
+.type_msg:focus {
+    box-shadow: none !important;
+    outline: 0px !important;
+}
+
+.send_btn {
+    border-radius: 0 15px 15px 0 !important;
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    border: 0 !important;
+    color: white !important;
+    cursor: pointer;
+}
+
+.user_img {
+    height: 70px;
+    width: 70px;
+    border: 1.5px solid #f5f6fa;
+
+}
+
+.img_cont {
+    position: relative;
+    height: 70px;
+    width: 70px;
+}
+
+
+.user_info {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 15px;
+}
+
+.user_info span {
+    font-size: 20px;
+    color: white;
+}
+
+.user_info p {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.msg_container {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-left: 10px;
+    border-radius: 25px;
+    background-color: rgb(108, 201, 187);
+    padding: 10px;
+    position: relative;
+}
+
+.msg_container_send {
+    margin-top: auto;
+    margin-bottom: auto;
+    margin-right: 10px;
+    border-radius: 25px;
+    background-color: #ae90e0;
+    padding: 10px;
+    position: relative;
+}
+
+.msg_time {
+    position: absolute;
+    left: 0;
+    bottom: -15px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 10px;
+}
+
+.msg_time_send {
+    position: absolute;
+    right: 0;
+    bottom: -15px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 10px;
+}
+
+.msg_container, .msg_container_send {
+    word-wrap: break-word; /* Перенос слів на наступний рядок */
+    word-break: break-word; /* Дозволяє розривати слова, які не поміщаються */
+    max-width: 80%; /* Обмежує ширину повідомлення, щоб виглядало акуратніше */
+    display: inline-flex; /* Використовуємо flexbox для вирівнювання дати */
+    justify-content: space-between; /* Дата і текст залишаються в одному рядку */
+    align-items: center; /* Вирівнюємо елементи по вертикалі */
+}
+
+/* Стилі для дати */
+.msg_time, .msg_time_send {
+    margin-left: 10px; /* Відступ дати від тексту */
+    white-space: nowrap; /* Забороняємо перенесення дати на новий рядок */
+}
+
+/* Стилі для кастомного скроллбара */
+.msg_card_body::-webkit-scrollbar {
+    width: 5px;
+}
+
+.msg_card_body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.msg_card_body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.msg_card_body::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+/* Забезпечуємо плавний скролл */
+.msg_card_body {
+    scroll-behavior: smooth;
+}
+
+/* Оновлюємо стилі для тіла повідомлень */
+.msg_card_body {
+    overflow-y: auto;
+    padding: 15px;
+    height: calc(80vh - 120px); /* Враховуємо висоту заголовка та футера */
+}
+
+
