@@ -55,5 +55,5 @@ function sendMessage() {
 
 // Додаємо початкове повідомлення від бота
 $(document).ready(function() {
-    addMessage("Привіт! Я ChatBot. Чим я можу вам допомогти?");
+    addMessage("Привіт! Я чат-бот. Чим я можу вам допомогти?");
 });
