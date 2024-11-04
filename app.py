@@ -14,6 +14,9 @@ conversation_histories = {
     'lmstudio': []
 }
 
+MAX_TOKENS = 4096
+
+
 def trim_history(history, max_tokens, prompt_tokens):
     """Обрізає історію, якщо вона перевищує ліміт токенів."""
     while prompt_tokens > max_tokens and history:
@@ -51,8 +54,7 @@ def chat(provider):
         model_response = completion.choices[0].message.content
 
         # Обрізаємо історію, якщо вона перевищує ліміт токенів
-        max_tokens = 4096
-        trim_history(history, max_tokens, completion.usage.prompt_tokens)
+        trim_history(history, MAX_TOKENS, completion.usage.prompt_tokens)
 
         # Додаємо відповідь моделі до історії
         history.append({"role": "assistant", "content": model_response})

@@ -43,6 +43,9 @@ function displayChatHistory(provider) {
     chatHistories[provider].forEach(messageData => {
         displayMessage(messageData);
     });
+
+    // Додаємо прокрутку до останнього повідомлення
+    $('#messageFormeight').scrollTop($('#messageFormeight')[0].scrollHeight);
 }
 
 // Ініціалізація вкладок Bootstrap
