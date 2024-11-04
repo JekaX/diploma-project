@@ -207,3 +207,14 @@ body, html {
 .mt-3 {
     margin-top: 1rem !important;
 }
+
+/* Додаємо стилі для неактивних вкладок та кнопки відправки */
+.disabled-tab {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.disabled-btn {
+    pointer-events: none;
+    opacity: 0.5;
+}

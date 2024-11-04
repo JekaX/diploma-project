@@ -6,6 +6,7 @@ let chatHistories = {
 };
 
 let currentProvider = 'chatgpt';
+let isWaitingForResponse = false; // Додаємо змінну для відстеження стану очікування відповіді
 
 function addMessage(message, isUser = false, provider = currentProvider) {
     const messageData = {
@@ -47,6 +48,11 @@ const welcomeMessages = {
 
 $(document).ready(function() {
     $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        if (isWaitingForResponse) {
+            e.preventDefault(); // Блокуємо перемикання вкладок під час очікування відповіді
+            return;
+        }
+
         const newProvider = $(e.target).attr('href').substring(1);
 
         if (currentProvider !== newProvider) {
@@ -77,10 +83,17 @@ $('#message').keypress(function(e) {
 });
 
 function sendMessage() {
+    if (isWaitingForResponse) {
+        return; // Блокуємо відправку повідомлення під час очікування відповіді
+    }
+
     const message = $('#message').val().trim();
 
     if(message) {
         addMessage(message, true);
+
+        isWaitingForResponse = true; // Встановлюємо стан очікування відповіді
+        disableTabsAndSendButton(); // Вимикаємо вкладки та кнопку відправки
 
         $.ajax({
             url: `/get/${currentProvider}`,
@@ -88,12 +101,28 @@ function sendMessage() {
             data: {msg: message},
             success: function(response) {
                 addMessage(response.response);
+                isWaitingForResponse = false; // Знімаємо стан очікування відповіді
+                enableTabsAndSendButton(); // Вмикаємо вкладки та кнопку відправки
             },
             error: function() {
                 addMessage("Вибачте, сталася помилка. Спробуйте ще раз пізніше.", false);
+                isWaitingForResponse = false; // Знімаємо стан очікування відповіді
+                enableTabsAndSendButton(); // Вмикаємо вкладки та кнопку відправки
             }
         });
 
         $('#message').val('');
     }
+}
+
+function disableTabsAndSendButton() {
+    $('a[data-bs-toggle="tab"]').addClass('disabled-tab');
+    $('#send-btn').addClass('disabled-btn');
+    $('#message').prop('disabled', true);
+}
+
+function enableTabsAndSendButton() {
+    $('a[data-bs-toggle="tab"]').removeClass('disabled-tab');
+    $('#send-btn').removeClass('disabled-btn');
+    $('#message').prop('disabled', false);
 }
