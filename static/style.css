@@ -194,6 +194,15 @@ body, html {
     border: none;
 }
 
+.nav-item {
+    margin-right: 5px;
+}
+
+.nav-link {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+}
+
 /* Відступ між вкладками та контентом header */
 .mt-3 {
     margin-top: 1rem !important;

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,18 +17,20 @@
         <div class="col-md-8 col-lg-6 col-xl-5">
             <div class="card">
                 <div class="card-header">
-                    <!-- Tabs navigation -->
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="openai-tab" data-bs-toggle="tab" href="#openai" role="tab"
-                               aria-selected="true">OpenAI</a>
+                            <a class="nav-link active" id="chatgpt-tab" data-bs-toggle="tab" href="#chatgpt" role="tab">ChatGPT (API)</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="lmstudio-tab" data-bs-toggle="tab" href="#lmstudio" role="tab"
-                               aria-selected="false">LM Studio</a>
+                            <a class="nav-link" id="gemini-tab" data-bs-toggle="tab" href="#gemini" role="tab">Gemini (API)</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="claude-tab" data-bs-toggle="tab" href="#claude" role="tab">Claude (API)</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="lmstudio-tab" data-bs-toggle="tab" href="#lmstudio" role="tab">Llama-3.2-1B-Instruct (LM Studio)</a>
                         </li>
                     </ul>
-
                     <div class="d-flex align-items-center mt-3">
                         <div class="img_cont">
                             <img src="{{ url_for('static', filename='chatbot.jpg') }}" class="rounded-circle user_img">
@@ -40,11 +42,8 @@
                     </div>
                 </div>
 
-                <!-- Тіло чату -->
-                <div class="card-body msg_card_body" id="messageFormeight">
-                    <!-- Повідомлення будуть додаватися тут динамічно -->
-                </div>
-                <!-- Футер чату з полем вводу -->
+                <div id="messageFormeight" class="card-body msg_card_body"></div>
+
                 <div class="card-footer">
                     <div class="input-group">
                         <input type="text" id="message" class="form-control type_msg"

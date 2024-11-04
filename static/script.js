@@ -1,12 +1,12 @@
-// Об'єкт для зберігання історії чатів для кожного провайдера
 let chatHistories = {
-    'openai': [],
-    'lmstudio': []
+    'chatgpt': [],
+    'gemini': [],
+    'claude': [],
+    'lmstudio': [],
 };
 
-let currentProvider = 'openai';
+let currentProvider = 'chatgpt';
 
-// Функція для додавання повідомлення до чату
 function addMessage(message, isUser = false, provider = currentProvider) {
     const messageData = {
         message: message,
@@ -14,14 +14,10 @@ function addMessage(message, isUser = false, provider = currentProvider) {
         time: new Date().toLocaleTimeString()
     };
 
-    // Зберігаємо повідомлення в історії
     chatHistories[provider].push(messageData);
-
-    // Відображаємо повідомлення
     displayMessage(messageData);
 }
 
-// Функція для відображення повідомлення
 function displayMessage(messageData) {
     const messageContainer = $('<div>').addClass('d-flex mb-4 ' + (messageData.isUser ? 'justify-content-end' : 'justify-content-start'));
     const messageContent = $('<div>').addClass(messageData.isUser ? 'msg_container_send' : 'msg_container').text(messageData.message);
@@ -31,81 +27,66 @@ function displayMessage(messageData) {
     messageContainer.append(messageContent);
     $('#messageFormeight').append(messageContainer);
 
-    // Плавно прокручуємо до нового повідомлення
-    $('#messageFormeight').animate({
-        scrollTop: $('#messageFormeight')[0].scrollHeight
-    }, 500);
+    $('#messageFormeight').scrollTop($('#messageFormeight')[0].scrollHeight);
 }
 
-// Функція для відображення історії конкретного провайдера
 function displayChatHistory(provider) {
     $('#messageFormeight').empty();
     chatHistories[provider].forEach(messageData => {
         displayMessage(messageData);
     });
-
-    // Додаємо прокрутку до останнього повідомлення
     $('#messageFormeight').scrollTop($('#messageFormeight')[0].scrollHeight);
 }
 
-// Ініціалізація вкладок Bootstrap
-$(document).ready(function() {
-    // Обробник зміни вкладки
-    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-        // Отримуємо ID активної вкладки
-        const newProvider = $(e.target).attr('href').substring(1); // Видаляємо # з href
+const welcomeMessages = {
+    'chatgpt': "Привіт! Я ChatGPT від OpenAI. Чим можу допомогти?",
+    'gemini': "Привіт! Я Gemini від Google. Чим можу допомогти?",
+    'claude': "Привіт! Я Claude від Anthropic. Чим можу допомогти?",
+    'lmstudio': "Привіт! Я Llama-3.2-1B-Instruct від LM Studio. Чим можу допомогти?",
+};
 
-        // Якщо змінився провайдер
+$(document).ready(function() {
+    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        const newProvider = $(e.target).attr('href').substring(1);
+
         if (currentProvider !== newProvider) {
             currentProvider = newProvider;
 
-            // Якщо історія для цього провайдера пуста, додаємо вітальне повідомлення
             if (chatHistories[currentProvider].length === 0) {
-                const welcomeMessage = currentProvider === 'openai'
-                    ? "Привіт! Я OpenAI чат-бот. Чим можу допомогти?"
-                    : "Привіт! Я LM Studio чат-бот. Чим можу допомогти?";
-                addMessage(welcomeMessage, false, currentProvider);
+                addMessage(welcomeMessages[currentProvider], false, currentProvider);
             }
 
-            // Відображаємо історію для поточного провайдера
             displayChatHistory(currentProvider);
         }
     });
 
-    // Додаємо початкове повідомлення при завантаженні сторінки
-    if (chatHistories['openai'].length === 0) {
-        addMessage("Привіт! Я OpenAI чат-бот. Чим можу допомогти?");
+    if (chatHistories['chatgpt'].length === 0) {
+        addMessage(welcomeMessages['chatgpt']);
     } else {
-        displayChatHistory('openai');
+        displayChatHistory('chatgpt');
     }
 });
 
-// Обробник події для кнопки відправки
 $('#send-btn').click(sendMessage);
 
-// Обробник події для поля вводу (відправка по Enter)
 $('#message').keypress(function(e) {
-    if(e.which == 13) {
+    if(e.which == 13 && !e.shiftKey) {
         sendMessage();
         return false;
     }
 });
 
-// Функція для відправки повідомлення
 function sendMessage() {
     const message = $('#message').val().trim();
 
     if(message) {
-        // Додаємо повідомлення користувача до чату
         addMessage(message, true);
 
-        // Відправляємо запит на сервер
         $.ajax({
             url: `/get/${currentProvider}`,
             type: 'POST',
             data: {msg: message},
             success: function(response) {
-                // Додаємо відповідь бота до чату
                 addMessage(response.response);
             },
             error: function() {
@@ -113,7 +94,6 @@ function sendMessage() {
             }
         });
 
-        // Очищаємо поле вводу
         $('#message').val('');
     }
 }
