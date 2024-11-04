@@ -45,6 +45,17 @@ body, html {
     cursor: pointer;
 }
 
+/* Стиль для іконки відправки */
+.send_btn i {
+    color: white;
+    font-size: 1.2rem;
+}
+
+.send_btn:hover i {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+}
+
 .user_img {
     height: 70px;
     width: 70px;
@@ -157,4 +168,33 @@ body, html {
     height: calc(80vh - 120px); /* Враховуємо висоту заголовка та футера */
 }
 
+/* Стилі для вкладок */
+.nav-tabs {
+    border-bottom: none;
+}
 
+.nav-tabs .nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link:hover {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-tabs .nav-link.active {
+    color: white;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+}
+
+/* Відступ між вкладками та контентом header */
+.mt-3 {
+    margin-top: 1rem !important;
+}
