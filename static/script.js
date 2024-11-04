@@ -1,3 +1,4 @@
+// Змінна для відстеження історії повідомлень для кожної моделі
 let chatHistories = {
     'chatgpt': [],
     'gemini': [],
@@ -5,9 +6,13 @@ let chatHistories = {
     'lmstudio': [],
 };
 
+// Поточна вибрана модель
 let currentProvider = 'chatgpt';
-let isWaitingForResponse = false; // Додаємо змінну для відстеження стану очікування відповіді
 
+// Змінна для відстеження стану очікування відповіді від моделі
+let isWaitingForResponse = false;
+
+// Функція для додавання повідомлення до історії та відображення його
 function addMessage(message, isUser = false, provider = currentProvider) {
     const messageData = {
         message: message,
@@ -19,6 +24,7 @@ function addMessage(message, isUser = false, provider = currentProvider) {
     displayMessage(messageData);
 }
 
+// Функція для відображення повідомлення на екрані
 function displayMessage(messageData) {
     const messageContainer = $('<div>').addClass('d-flex mb-4 ' + (messageData.isUser ? 'justify-content-end' : 'justify-content-start'));
     const messageContent = $('<div>').addClass(messageData.isUser ? 'msg_container_send' : 'msg_container').text(messageData.message);
@@ -31,6 +37,7 @@ function displayMessage(messageData) {
     $('#messageFormeight').scrollTop($('#messageFormeight')[0].scrollHeight);
 }
 
+// Функція для відображення історії повідомлень для обраної моделі
 function displayChatHistory(provider) {
     $('#messageFormeight').empty();
     chatHistories[provider].forEach(messageData => {
@@ -39,6 +46,7 @@ function displayChatHistory(provider) {
     $('#messageFormeight').scrollTop($('#messageFormeight')[0].scrollHeight);
 }
 
+// Привітальні повідомлення для кожної моделі
 const welcomeMessages = {
     'chatgpt': "Привіт! Я ChatGPT від OpenAI. Чим можу допомогти?",
     'gemini': "Привіт! Я Gemini від Google. Чим можу допомогти?",
@@ -46,7 +54,9 @@ const welcomeMessages = {
     'lmstudio': "Привіт! Я Llama-3.2-1B-Instruct від LM Studio. Чим можу допомогти?",
 };
 
+// Ініціалізація та обробка подій при завантаженні сторінки
 $(document).ready(function() {
+    // Обробка події перемикання вкладок
     $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
         if (isWaitingForResponse) {
             e.preventDefault(); // Блокуємо перемикання вкладок під час очікування відповіді
@@ -66,6 +76,7 @@ $(document).ready(function() {
         }
     });
 
+    // Відображення історії повідомлень для початкової моделі
     if (chatHistories['chatgpt'].length === 0) {
         addMessage(welcomeMessages['chatgpt']);
     } else {
@@ -73,8 +84,10 @@ $(document).ready(function() {
     }
 });
 
+// Обробка події натискання кнопки відправки повідомлення
 $('#send-btn').click(sendMessage);
 
+// Обробка події натискання клавіші Enter у полі введення повідомлення
 $('#message').keypress(function(e) {
     if(e.which == 13 && !e.shiftKey) {
         sendMessage();
@@ -82,6 +95,7 @@ $('#message').keypress(function(e) {
     }
 });
 
+// Функція для відправки повідомлення
 function sendMessage() {
     if (isWaitingForResponse) {
         return; // Блокуємо відправку повідомлення під час очікування відповіді
@@ -115,12 +129,14 @@ function sendMessage() {
     }
 }
 
+// Функція для вимкнення вкладок та кнопки відправки
 function disableTabsAndSendButton() {
     $('a[data-bs-toggle="tab"]').addClass('disabled-tab');
     $('#send-btn').addClass('disabled-btn');
     $('#message').prop('disabled', true);
 }
 
+// Функція для ввімкнення вкладок та кнопки відправки
 function enableTabsAndSendButton() {
     $('a[data-bs-toggle="tab"]').removeClass('disabled-tab');
     $('#send-btn').removeClass('disabled-btn');
