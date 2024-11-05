@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, jsonify
 from openai import OpenAI
 import google.generativeai as genai
 import anthropic
+import requests
+import json
 
 app = Flask(__name__)
 
@@ -10,14 +12,16 @@ conversation_histories = {
     'openai': [],
     'google': [],
     'anthropic': [],
-    'lmstudio': []
+    'lmstudio': [],
+    'vectorshift': []
 }
 
 models = {
     'openai': 'gpt-3.5-turbo',
     'google': 'gemini-1.5-flash',
     'anthropic': 'claude-3-5-sonnet-20241022',
-    'lmstudio': 'hugging-quants/Llama-3.2-1B-Instruct-Q8_0-GGUF'
+    'lmstudio': 'hugging-quants/Llama-3.2-1B-Instruct-Q8_0-GGUF',
+    'vectorshift': 'Vectorshift Demo'
 }
 
 MAX_TOKENS = 4000
@@ -30,6 +34,10 @@ anthropic_client = anthropic.Anthropic(api_key="your-anthropic-api-key")
 # Конфігурація Google Gemini
 genai.configure(api_key="your-google-api-key")
 google_model = genai.GenerativeModel(models['google'])
+
+# Конфігурація VectorShift
+VECTORSHIFT_API_KEY = "your_vectorshift_api_key"
+VECTORSHIFT_URL = "https://api.vectorshift.ai/api/pipelines/run"
 
 
 def trim_history(history, max_tokens, prompt_tokens):
@@ -92,6 +100,24 @@ def chat(provider):
             )
             model_response = completion.choices[0].message.content
             prompt_tokens = completion.usage.prompt_tokens
+
+        elif provider == 'vectorshift':
+            # Конвертуємо історію в формат, зрозумілий для VectorShift
+            vectorshift_message = "\n".join([msg["content"] for msg in history])
+            data = {
+                "inputs": json.dumps({
+                    "input": vectorshift_message
+                }),
+                "pipeline_name": models['vectorshift'],
+                "username": "test_demo",
+            }
+            headers = {
+                "Api-Key": VECTORSHIFT_API_KEY,
+            }
+            response = requests.post(VECTORSHIFT_URL, headers=headers, data=data)
+            response_json = response.json()
+            model_response = response_json.get("output", "Немає відповіді")
+            prompt_tokens = len(vectorshift_message.split())  # Приблизна оцінка токенів
 
         # Обрізаємо історію, якщо вона перевищує ліміт токенів
         trim_history(history, MAX_TOKENS, prompt_tokens)
