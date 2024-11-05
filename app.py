@@ -5,6 +5,23 @@ import anthropic
 
 app = Flask(__name__)
 
+# Окремі історії для кожного провайдера
+conversation_histories = {
+    'openai': [],
+    'google': [],
+    'anthropic': [],
+    'lmstudio': []
+}
+
+models = {
+    'openai': 'gpt-3.5-turbo',
+    'google': 'gemini-1.5-flash',
+    'anthropic': 'claude-3-5-sonnet-20241022',
+    'lmstudio': 'hugging-quants/Llama-3.2-1B-Instruct-Q8_0-GGUF'
+}
+
+MAX_TOKENS = 4000
+
 # Ініціалізація клієнтів
 openai_client = OpenAI(api_key="your-openai-api-key")
 lmstudio_client = OpenAI(base_url="http://localhost:1234/v1", api_key="lm-studio")
@@ -12,17 +29,7 @@ anthropic_client = anthropic.Anthropic(api_key="your-anthropic-api-key")
 
 # Конфігурація Google Gemini
 genai.configure(api_key="your-google-api-key")
-gemini_model = genai.GenerativeModel("gemini-1.5-flash")
-
-# Окремі історії для кожного провайдера
-conversation_histories = {
-    'openai': [],
-    'gemini': [],
-    'anthropic': [],
-    'lmstudio': []
-}
-
-MAX_TOKENS = 4096
+google_model = genai.GenerativeModel(models['google'])
 
 
 def trim_history(history, max_tokens, prompt_tokens):
@@ -47,19 +54,19 @@ def chat(provider):
     try:
         if provider == 'openai':
             completion = openai_client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model=models['openai'],
                 messages=history,
                 temperature=0.7
             )
             model_response = completion.choices[0].message.content
             prompt_tokens = completion.usage.prompt_tokens
 
-        elif provider == 'gemini':
-            # Конвертуємо історію в формат, зрозумілий для Gemini
-            gemini_message = "\n".join([msg["content"] for msg in history])
-            response = gemini_model.generate_content(gemini_message)
+        elif provider == 'google':
+            # Конвертуємо історію в формат, зрозумілий для Google (Gemini)
+            google_message = "\n".join([msg["content"] for msg in history])
+            response = google_model.generate_content(google_message)
             model_response = response.text
-            prompt_tokens = len(gemini_message.split())  # Приблизна оцінка токенів
+            prompt_tokens = len(google_message.split())  # Приблизна оцінка токенів
 
         elif provider == 'anthropic':
             # Конвертуємо історію в формат повідомлень Anthropic
@@ -69,7 +76,7 @@ def chat(provider):
             ]
 
             response = anthropic_client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model=models['anthropic'],
                 max_tokens=1000,
                 temperature=0.7,
                 messages=anthropic_messages
@@ -79,7 +86,7 @@ def chat(provider):
 
         elif provider == 'lmstudio':
             completion = lmstudio_client.chat.completions.create(
-                model="hugging-quants/Llama-3.2-1B-Instruct-Q8_0-GGUF",
+                model=models['lmstudio'],
                 messages=history,
                 temperature=0.7
             )
