@@ -4,7 +4,8 @@ let chatHistories = {
     'claude': [],
     'lmstudio': [],
     'vectorshift': [],
-    'ollama': []
+    'ollama': [],
+    'groq': []
 };
 
 let currentProvider = 'chatgpt';
@@ -47,7 +48,8 @@ const welcomeMessages = {
     'claude': "Привіт! Я Claude від Anthropic. Чим можу допомогти?",
     'lmstudio': "Привіт! Я Llama-3.2-1B-Instruct від LM Studio. Чим можу допомогти?",
     'vectorshift': "Привіт! Я VectorShift від VectorShift.ai. Чим можу допомогти?",
-    'ollama': "Привіт! Я Ollama від Ollama.ai. Чим можу допомогти?"
+    'ollama': "Привіт! Я Ollama від Ollama.ai. Чим можу допомогти?",
+    'groq': "Привіт! Я Groq від Groq.ai. Чим можу допомогти?"
 };
 
 $(document).ready(function() {

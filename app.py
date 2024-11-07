@@ -4,6 +4,7 @@ import google.generativeai as genai
 import anthropic
 import requests
 import json
+from groq import Groq  # Додаємо імпорт для Groq
 
 app = Flask(__name__)
 
@@ -14,7 +15,8 @@ conversation_histories = {
     'anthropic': [],
     'lmstudio': [],
     'vectorshift': [],
-    'ollama': []
+    'ollama': [],
+    'groq': []
 }
 
 models = {
@@ -23,7 +25,8 @@ models = {
     'anthropic': 'claude-3-5-sonnet-20241022',
     'lmstudio': 'hugging-quants/Llama-3.2-1B-Instruct-Q8_0-GGUF',
     'vectorshift': 'Vectorshift Demo',
-    'ollama': 'llama3.2'
+    'ollama': 'llama3.2',
+    'groq': 'llama-3.1-70b-versatile'
 }
 
 MAX_TOKENS = 4000
@@ -32,6 +35,7 @@ MAX_TOKENS = 4000
 openai_client = OpenAI(api_key="your-openai-api-key")
 lmstudio_client = OpenAI(base_url="http://localhost:1234/v1", api_key="lm-studio")
 anthropic_client = anthropic.Anthropic(api_key="your-anthropic-api-key")
+groq_client = Groq(api_key="your_groq_api_key")
 
 # Конфігурація Google Gemini
 genai.configure(api_key="your-google-api-key")
@@ -139,6 +143,20 @@ def chat(provider):
             )
             model_response = full_response
             prompt_tokens = len(ollama_message.split())  # Приблизна оцінка токенів
+
+        elif provider == 'groq':
+            # Конвертуємо історію в формат, зрозумілий для Groq
+            groq_messages = [
+                {"role": msg["role"], "content": msg["content"]}
+                for msg in history
+            ]
+
+            chat_completion = groq_client.chat.completions.create(
+                messages=groq_messages,
+                model=models['groq'],
+            )
+            model_response = chat_completion.choices[0].message.content
+            prompt_tokens = len(str(groq_messages).split())  # Приблизна оцінка токенів
 
         # Обрізаємо історію, якщо вона перевищує ліміт токенів
         trim_history(history, MAX_TOKENS, prompt_tokens)
