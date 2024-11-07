@@ -13,7 +13,8 @@ conversation_histories = {
     'google': [],
     'anthropic': [],
     'lmstudio': [],
-    'vectorshift': []
+    'vectorshift': [],
+    'ollama': []
 }
 
 models = {
@@ -21,7 +22,8 @@ models = {
     'google': 'gemini-1.5-flash',
     'anthropic': 'claude-3-5-sonnet-20241022',
     'lmstudio': 'hugging-quants/Llama-3.2-1B-Instruct-Q8_0-GGUF',
-    'vectorshift': 'Vectorshift Demo'
+    'vectorshift': 'Vectorshift Demo',
+    'ollama': 'llama3.2'
 }
 
 MAX_TOKENS = 4000
@@ -38,6 +40,9 @@ google_model = genai.GenerativeModel(models['google'])
 # Конфігурація VectorShift
 VECTORSHIFT_API_KEY = "your_vectorshift_api_key"
 VECTORSHIFT_URL = "https://api.vectorshift.ai/api/pipelines/run"
+
+# Конфігурація Ollama
+OLLAMA_URL = "http://localhost:11434/api/generate"
 
 
 def trim_history(history, max_tokens, prompt_tokens):
@@ -118,6 +123,22 @@ def chat(provider):
             response_json = response.json()
             model_response = response_json.get("output", "Немає відповіді")
             prompt_tokens = len(vectorshift_message.split())  # Приблизна оцінка токенів
+
+        elif provider == 'ollama':
+            # Конвертуємо історію в формат, зрозумілий для Ollama
+            ollama_message = "\n".join([msg["content"] for msg in history])
+            data = {
+                "model": models['ollama'],
+                "prompt": ollama_message
+            }
+            response = requests.post(OLLAMA_URL, json=data, stream=True)
+            full_response = "".join(
+                json.loads(line.decode("utf-8")).get("response", "")
+                for line in response.iter_lines()
+                if line
+            )
+            model_response = full_response
+            prompt_tokens = len(ollama_message.split())  # Приблизна оцінка токенів
 
         # Обрізаємо історію, якщо вона перевищує ліміт токенів
         trim_history(history, MAX_TOKENS, prompt_tokens)
