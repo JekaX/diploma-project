@@ -209,12 +209,104 @@ body, html {
 }
 
 /* Додаємо стилі для неактивних вкладок та кнопки відправки */
-.disabled-tab {
+.disabled-btn {
     pointer-events: none;
     opacity: 0.5;
 }
 
-.disabled-btn {
-    pointer-events: none;
-    opacity: 0.5;
+/* Стилі для dropdown */
+.dropdown-menu {
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    max-height: 750px;
+    overflow-y: auto;
+}
+
+.dropdown-item {
+    color: #f8f9fa;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease;
+    border-radius: 15px;
+    margin: 5px;
+    display: inline-block;
+    padding: 0.25rem 1rem;
+    white-space: nowrap;
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    color: #f8f9fa;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.dropdown-item-text {
+    color: #f8f9fa;
+    font-weight: bold;
+    padding: 0.25rem 1.5rem;
+}
+
+.dropdown-toggle {
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #f8f9fa;
+    border-radius: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-toggle:hover, .dropdown-toggle:focus {
+    background-color: rgba(0, 0, 0, 0.6);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.dropdown-toggle:after {
+    content: '\f107';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    border: none;
+    vertical-align: 0;
+    margin-left: 0.5em;
+}
+
+.dropdown-menu ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.dropdown-menu ul li {
+    padding: 0.25rem 1.5rem;
+}
+
+.dropdown-menu ul li a {
+    color: #f8f9fa;
+    text-decoration: none;
+}
+
+.dropdown-menu ul li a:hover {
+    color: #f8f9fa;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Стилі для кастомного скроллбара в dropdown */
+.dropdown-menu::-webkit-scrollbar {
+    width: 5px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4);
 }

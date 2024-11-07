@@ -4,19 +4,41 @@ import google.generativeai as genai
 import anthropic
 import requests
 import json
-from groq import Groq  # Додаємо імпорт для Groq
+from groq import Groq
 
 app = Flask(__name__)
 
-# Окремі історії для кожного провайдера
+# Окремі історії для кожного провайдера та моделі
 conversation_histories = {
-    'openai': [],
-    'google': [],
-    'anthropic': [],
-    'lmstudio': [],
-    'vectorshift': [],
-    'ollama': [],
-    'groq': []
+    'openai': {
+        'gpt-3.5-turbo': [],
+        'gpt-4': [],
+        'o1-mini': []
+    },
+    'google': {
+        'gemini-1.5-flash': [],
+        'gemini-1.5-flash-8b': [],
+        'gemini-1.5-pro': []
+    },
+    'anthropic': {
+        'claude-3-5-sonnet-20241022': [],
+        'claude-3-5-haiku-20241022': [],
+        'claude-3-opus-20240229': []
+    },
+    'groq': {
+        'llama-3.1-8b-instant': [],
+        'llama-3.1-70b-versatile': [],
+        'llama-3.2-90b-text-preview': []
+    },
+    'vectorshift': {
+        'Vectorshift Demo': []
+    },
+    'lmstudio': {
+        'hugging-quants/Llama-3.2-1B-Instruct-Q8_0-GGUF': []
+    },
+    'ollama': {
+        'llama3.2': []
+    }
 }
 
 models = {
@@ -60,10 +82,10 @@ def index():
     return render_template('chat.html')
 
 
-@app.route("/get/<provider>", methods=["POST"])
-def chat(provider):
+@app.route("/get/<provider>/<model>", methods=["POST"])
+def chat(provider, model):
     user_message = request.form['msg']
-    history = conversation_histories[provider]
+    history = conversation_histories[provider][model]
 
     # Додаємо повідомлення користувача до історії
     history.append({"role": "user", "content": user_message})
@@ -71,7 +93,7 @@ def chat(provider):
     try:
         if provider == 'openai':
             completion = openai_client.chat.completions.create(
-                model=models['openai'],
+                model=model,
                 messages=history,
                 temperature=0.7
             )
@@ -93,7 +115,7 @@ def chat(provider):
             ]
 
             response = anthropic_client.messages.create(
-                model=models['anthropic'],
+                model=model,
                 max_tokens=1000,
                 temperature=0.7,
                 messages=anthropic_messages
@@ -103,7 +125,7 @@ def chat(provider):
 
         elif provider == 'lmstudio':
             completion = lmstudio_client.chat.completions.create(
-                model=models['lmstudio'],
+                model=model,
                 messages=history,
                 temperature=0.7
             )
@@ -117,7 +139,7 @@ def chat(provider):
                 "inputs": json.dumps({
                     "input": vectorshift_message
                 }),
-                "pipeline_name": models['vectorshift'],
+                "pipeline_name": model,
                 "username": "test_demo",
             }
             headers = {
@@ -132,7 +154,7 @@ def chat(provider):
             # Конвертуємо історію в формат, зрозумілий для Ollama
             ollama_message = "\n".join([msg["content"] for msg in history])
             data = {
-                "model": models['ollama'],
+                "model": model,
                 "prompt": ollama_message
             }
             response = requests.post(OLLAMA_URL, json=data, stream=True)
@@ -153,7 +175,7 @@ def chat(provider):
 
             chat_completion = groq_client.chat.completions.create(
                 messages=groq_messages,
-                model=models['groq'],
+                model=model,
             )
             model_response = chat_completion.choices[0].message.content
             prompt_tokens = len(str(groq_messages).split())  # Приблизна оцінка токенів

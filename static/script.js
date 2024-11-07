@@ -1,24 +1,24 @@
-let chatHistories = {
-    'chatgpt': [],
-    'gemini': [],
-    'claude': [],
-    'lmstudio': [],
-    'vectorshift': [],
-    'ollama': [],
-    'groq': []
-};
+let chatHistories = {};
 
-let currentProvider = 'chatgpt';
+let currentProvider = null;
+let currentModel = null;
 let isWaitingForResponse = false;
 
-function addMessage(message, isUser = false, provider = currentProvider) {
+function addMessage(message, isUser = false, provider = currentProvider, model = currentModel) {
     const messageData = {
         message: message,
         isUser: isUser,
         time: new Date().toLocaleTimeString()
     };
 
-    chatHistories[provider].push(messageData);
+    if (!chatHistories[provider]) {
+        chatHistories[provider] = {};
+    }
+    if (!chatHistories[provider][model]) {
+        chatHistories[provider][model] = [];
+    }
+
+    chatHistories[provider][model].push(messageData);
     displayMessage(messageData);
 }
 
@@ -34,18 +34,20 @@ function displayMessage(messageData) {
     $('#messageFormeight').scrollTop($('#messageFormeight')[0].scrollHeight);
 }
 
-function displayChatHistory(provider) {
+function displayChatHistory(provider, model) {
     $('#messageFormeight').empty();
-    chatHistories[provider].forEach(messageData => {
-        displayMessage(messageData);
-    });
+    if (chatHistories[provider] && chatHistories[provider][model]) {
+        chatHistories[provider][model].forEach(messageData => {
+            displayMessage(messageData);
+        });
+    }
     $('#messageFormeight').scrollTop($('#messageFormeight')[0].scrollHeight);
 }
 
 const welcomeMessages = {
-    'chatgpt': "Привіт! Я ChatGPT від OpenAI. Чим можу допомогти?",
-    'gemini': "Привіт! Я Gemini від Google. Чим можу допомогти?",
-    'claude': "Привіт! Я Claude від Anthropic. Чим можу допомогти?",
+    'openai': "Привіт! Я ChatGPT від OpenAI. Чим можу допомогти?",
+    'google': "Привіт! Я Gemini від Google. Чим можу допомогти?",
+    'anthropic': "Привіт! Я Claude від Anthropic. Чим можу допомогти?",
     'lmstudio': "Привіт! Я Llama-3.2-1B-Instruct від LM Studio. Чим можу допомогти?",
     'vectorshift': "Привіт! Я VectorShift від VectorShift.ai. Чим можу допомогти?",
     'ollama': "Привіт! Я Ollama від Ollama.ai. Чим можу допомогти?",
@@ -53,30 +55,36 @@ const welcomeMessages = {
 };
 
 $(document).ready(function() {
-    $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
-        if (isWaitingForResponse) {
-            e.preventDefault();
-            return;
+    $('#modelDropdown').text('Select a model');
+
+    $('#modelDropdownMenu a').click(function(e) {
+        e.preventDefault();
+        if (isWaitingForResponse) return;
+        const provider = $(this).data('provider');
+        const model = $(this).data('model');
+        currentProvider = provider;
+        currentModel = model;
+        $('#modelDropdown').text(`${model} (${provider})`);
+        $('#selectModelPrompt').hide();
+        if (!chatHistories[currentProvider] || !chatHistories[currentProvider][currentModel] || chatHistories[currentProvider][currentModel].length === 0) {
+            addMessage(welcomeMessages[currentProvider], false, currentProvider, currentModel);
         }
+        displayChatHistory(currentProvider, currentModel);
+    });
 
-        const newProvider = $(e.target).attr('href').substring(1);
-
-        if (currentProvider !== newProvider) {
-            currentProvider = newProvider;
-
-            if (chatHistories[currentProvider].length === 0) {
-                addMessage(welcomeMessages[currentProvider], false, currentProvider);
-            }
-
-            displayChatHistory(currentProvider);
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#modelDropdownMenu').length && !$(e.target).is('#modelDropdown')) {
+            $('#modelDropdownMenu').removeClass('show');
         }
     });
 
-    if (chatHistories['chatgpt'].length === 0) {
-        addMessage(welcomeMessages['chatgpt']);
-    } else {
-        displayChatHistory('chatgpt');
-    }
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            $('#modelDropdownMenu').removeClass('show');
+        }
+    });
+
+    $('#selectModelPrompt').show();
 });
 
 $('#send-btn').click(sendMessage);
@@ -89,7 +97,7 @@ $('#message').keypress(function(e) {
 });
 
 function sendMessage() {
-    if (isWaitingForResponse) {
+    if (isWaitingForResponse || !currentProvider || !currentModel) {
         return;
     }
 
@@ -99,21 +107,21 @@ function sendMessage() {
         addMessage(message, true);
 
         isWaitingForResponse = true;
-        disableTabsAndSendButton();
+        disableDropdownAndSendButton();
 
         $.ajax({
-            url: `/get/${currentProvider}`,
+            url: `/get/${currentProvider}/${currentModel}`,
             type: 'POST',
             data: {msg: message},
             success: function(response) {
                 addMessage(response.response);
                 isWaitingForResponse = false;
-                enableTabsAndSendButton();
+                enableDropdownAndSendButton();
             },
             error: function() {
                 addMessage("Вибачте, сталася помилка. Спробуйте ще раз пізніше.", false);
                 isWaitingForResponse = false;
-                enableTabsAndSendButton();
+                enableDropdownAndSendButton();
             }
         });
 
@@ -121,14 +129,14 @@ function sendMessage() {
     }
 }
 
-function disableTabsAndSendButton() {
-    $('a[data-bs-toggle="tab"]').addClass('disabled-tab');
+function disableDropdownAndSendButton() {
+    $('#modelDropdown').addClass('disabled-btn');
     $('#send-btn').addClass('disabled-btn');
     $('#message').prop('disabled', true);
 }
 
-function enableTabsAndSendButton() {
-    $('a[data-bs-toggle="tab"]').removeClass('disabled-tab');
+function enableDropdownAndSendButton() {
+    $('#modelDropdown').removeClass('disabled-btn');
     $('#send-btn').removeClass('disabled-btn');
     $('#message').prop('disabled', false);
 }
