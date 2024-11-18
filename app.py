@@ -5,50 +5,50 @@ import anthropic
 import requests
 import json
 from groq import Groq
+import urllib.parse
 
 app = Flask(__name__)
 
-# Окремі історії для кожного провайдера та моделі
 conversation_histories = {
-    'openai': {
+    'OpenAI API': {
         'gpt-3.5-turbo': [],
-        'gpt-4': [],
+        'gpt-4o': [],
         'o1-mini': []
     },
-    'google': {
+    'Google API': {
         'gemini-1.5-flash': [],
         'gemini-1.5-flash-8b': [],
         'gemini-1.5-pro': []
     },
-    'anthropic': {
+    'Anthropic API': {
         'claude-3-5-sonnet-20241022': [],
         'claude-3-5-haiku-20241022': [],
         'claude-3-opus-20240229': []
     },
-    'groq': {
+    'Groq API': {
         'llama-3.1-8b-instant': [],
         'llama-3.1-70b-versatile': [],
         'llama-3.2-90b-text-preview': []
     },
-    'vectorshift': {
-        'Vectorshift Demo': []
+    'VectorShift API': {
+        'customized_gpt-4o': []
     },
-    'lmstudio': {
+    'LM Studio': {
         'hugging-quants/Llama-3.2-1B-Instruct-Q8_0-GGUF': []
     },
-    'ollama': {
-        'llama3.2': []
+    'Ollama': {
+        'llama3.1': []
     }
 }
 
 models = {
-    'openai': 'gpt-3.5-turbo',
-    'google': 'gemini-1.5-flash',
-    'anthropic': 'claude-3-5-sonnet-20241022',
-    'lmstudio': 'hugging-quants/Llama-3.2-1B-Instruct-Q8_0-GGUF',
-    'vectorshift': 'Vectorshift Demo',
-    'ollama': 'llama3.2',
-    'groq': 'llama-3.1-70b-versatile'
+    'OpenAI API': 'gpt-3.5-turbo',
+    'Google API': 'gemini-1.5-flash',
+    'Anthropic API': 'claude-3-5-sonnet-20241022',
+    'LM Studio': 'hugging-quants/Llama-3.2-1B-Instruct-Q8_0-GGUF',
+    'VectorShift API': 'customized_gpt-4o',
+    'ollama': 'llama3.1',
+    'Groq API': 'llama-3.1-70b-versatile'
 }
 
 MAX_TOKENS = 4000
@@ -57,11 +57,11 @@ MAX_TOKENS = 4000
 openai_client = OpenAI(api_key="your-openai-api-key")
 lmstudio_client = OpenAI(base_url="http://localhost:1234/v1", api_key="lm-studio")
 anthropic_client = anthropic.Anthropic(api_key="your-anthropic-api-key")
-groq_client = Groq(api_key="your_groq_api_key")
+groq_client = Groq(api_key="your-groq-api-key")
 
 # Конфігурація Google Gemini
 genai.configure(api_key="your-google-api-key")
-google_model = genai.GenerativeModel(models['google'])
+google_model = genai.GenerativeModel(models['Google API'])
 
 # Конфігурація VectorShift
 VECTORSHIFT_API_KEY = "your_vectorshift_api_key"
@@ -82,8 +82,15 @@ def index():
     return render_template('chat.html')
 
 
-@app.route("/get/<provider>/<model>", methods=["POST"])
-def chat(provider, model):
+@app.route("/get/<path:path>", methods=["POST"])
+def chat(path):
+    parts = path.split('/', 1)
+    if len(parts) != 2:
+        return jsonify({"response": "Invalid path format"}), 400
+
+    provider = urllib.parse.unquote(parts[0])
+    model = urllib.parse.unquote(parts[1])
+
     user_message = request.form['msg']
     history = conversation_histories[provider][model]
 
@@ -91,7 +98,7 @@ def chat(provider, model):
     history.append({"role": "user", "content": user_message})
 
     try:
-        if provider == 'openai':
+        if provider == 'OpenAI API':
             completion = openai_client.chat.completions.create(
                 model=model,
                 messages=history,
@@ -100,14 +107,14 @@ def chat(provider, model):
             model_response = completion.choices[0].message.content
             prompt_tokens = completion.usage.prompt_tokens
 
-        elif provider == 'google':
+        elif provider == 'Google API':
             # Конвертуємо історію в формат, зрозумілий для Google (Gemini)
             google_message = "\n".join([msg["content"] for msg in history])
             response = google_model.generate_content(google_message)
             model_response = response.text
             prompt_tokens = len(google_message.split())  # Приблизна оцінка токенів
 
-        elif provider == 'anthropic':
+        elif provider == 'Anthropic API':
             # Конвертуємо історію в формат повідомлень Anthropic
             anthropic_messages = [
                 {"role": msg["role"], "content": msg["content"]}
@@ -123,7 +130,7 @@ def chat(provider, model):
             model_response = response.content[0].text
             prompt_tokens = len(str(anthropic_messages).split())  # Приблизна оцінка токенів
 
-        elif provider == 'lmstudio':
+        elif provider == 'LM Studio':
             completion = lmstudio_client.chat.completions.create(
                 model=model,
                 messages=history,
@@ -132,7 +139,7 @@ def chat(provider, model):
             model_response = completion.choices[0].message.content
             prompt_tokens = completion.usage.prompt_tokens
 
-        elif provider == 'vectorshift':
+        elif provider == 'VectorShift API':
             # Конвертуємо історію в формат, зрозумілий для VectorShift
             vectorshift_message = "\n".join([msg["content"] for msg in history])
             data = {
@@ -147,10 +154,10 @@ def chat(provider, model):
             }
             response = requests.post(VECTORSHIFT_URL, headers=headers, data=data)
             response_json = response.json()
-            model_response = response_json.get("output", "Немає відповіді")
+            model_response = response_json.get("output", "Вибачте, сталася помилка при обробці запиту. Спробуйте ще раз пізніше.")
             prompt_tokens = len(vectorshift_message.split())  # Приблизна оцінка токенів
 
-        elif provider == 'ollama':
+        elif provider == 'Ollama':
             # Конвертуємо історію в формат, зрозумілий для Ollama
             ollama_message = "\n".join([msg["content"] for msg in history])
             data = {
@@ -166,7 +173,7 @@ def chat(provider, model):
             model_response = full_response
             prompt_tokens = len(ollama_message.split())  # Приблизна оцінка токенів
 
-        elif provider == 'groq':
+        elif provider == 'Groq API':
             # Конвертуємо історію в формат, зрозумілий для Groq
             groq_messages = [
                 {"role": msg["role"], "content": msg["content"]}

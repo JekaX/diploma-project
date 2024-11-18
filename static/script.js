@@ -44,20 +44,10 @@ function displayChatHistory(provider, model) {
     $('#messageFormeight').scrollTop($('#messageFormeight')[0].scrollHeight);
 }
 
-const welcomeMessages = {
-    'openai': "Привіт! Я ChatGPT від OpenAI. Чим можу допомогти?",
-    'google': "Привіт! Я Gemini від Google. Чим можу допомогти?",
-    'anthropic': "Привіт! Я Claude від Anthropic. Чим можу допомогти?",
-    'lmstudio': "Привіт! Я Llama-3.2-1B-Instruct від LM Studio. Чим можу допомогти?",
-    'vectorshift': "Привіт! Я VectorShift від VectorShift.ai. Чим можу допомогти?",
-    'ollama': "Привіт! Я Ollama від Ollama.ai. Чим можу допомогти?",
-    'groq': "Привіт! Я Groq від Groq.ai. Чим можу допомогти?"
-};
+$(document).ready(function () {
+    $('#modelDropdown').text('Вибрати модель');
 
-$(document).ready(function() {
-    $('#modelDropdown').text('Select a model');
-
-    $('#modelDropdownMenu a').click(function(e) {
+    $('#modelDropdownMenu a').click(function (e) {
         e.preventDefault();
         if (isWaitingForResponse) return;
         const provider = $(this).data('provider');
@@ -67,18 +57,18 @@ $(document).ready(function() {
         $('#modelDropdown').text(`${model} (${provider})`);
         $('#selectModelPrompt').hide();
         if (!chatHistories[currentProvider] || !chatHistories[currentProvider][currentModel] || chatHistories[currentProvider][currentModel].length === 0) {
-            addMessage(welcomeMessages[currentProvider], false, currentProvider, currentModel);
+            addMessage(`Доброго дня! Я - модель ${model} (${(provider)}). Можете задати мені питання, яке Вас цікавить.`, false, currentProvider, currentModel);
         }
         displayChatHistory(currentProvider, currentModel);
     });
 
-    $(document).on('click', function(e) {
+    $(document).on('click', function (e) {
         if (!$(e.target).closest('#modelDropdownMenu').length && !$(e.target).is('#modelDropdown')) {
             $('#modelDropdownMenu').removeClass('show');
         }
     });
 
-    $(document).on('keydown', function(e) {
+    $(document).on('keydown', function (e) {
         if (e.key === 'Escape') {
             $('#modelDropdownMenu').removeClass('show');
         }
@@ -89,8 +79,8 @@ $(document).ready(function() {
 
 $('#send-btn').click(sendMessage);
 
-$('#message').keypress(function(e) {
-    if(e.which == 13 && !e.shiftKey) {
+$('#message').keypress(function (e) {
+    if (e.which == 13 && !e.shiftKey) {
         sendMessage();
         return false;
     }
@@ -103,22 +93,22 @@ function sendMessage() {
 
     const message = $('#message').val().trim();
 
-    if(message) {
+    if (message) {
         addMessage(message, true);
 
         isWaitingForResponse = true;
         disableDropdownAndSendButton();
 
         $.ajax({
-            url: `/get/${currentProvider}/${currentModel}`,
+            url: `/get/${encodeURIComponent(currentProvider)}/${encodeURIComponent(currentModel)}`,
             type: 'POST',
             data: {msg: message},
-            success: function(response) {
+            success: function (response) {
                 addMessage(response.response);
                 isWaitingForResponse = false;
                 enableDropdownAndSendButton();
             },
-            error: function() {
+            error: function () {
                 addMessage("Вибачте, сталася помилка. Спробуйте ще раз пізніше.", false);
                 isWaitingForResponse = false;
                 enableDropdownAndSendButton();
