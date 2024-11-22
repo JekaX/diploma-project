@@ -23,7 +23,7 @@ body, html {
     border-bottom: 0 !important;
 }
 
-/* Стиль для підвалу картки */
+/* Стиль для футера картки */
 .card-footer {
     border-radius: 0 0 15px 15px !important;
     border-top: 0 !important;
@@ -86,7 +86,7 @@ body, html {
     margin-left: 15px;
 }
 
-/* Стиль для імені користувача */
+/* Стиль для інформації про користувача */
 .user_info span {
     font-size: 20px;
     color: white;
@@ -154,29 +154,26 @@ body, html {
     white-space: nowrap;
 }
 
-/* Стиль для полоси прокрутки тіла повідомлення картки */
+/* Стилі для скроллбару */
 .msg_card_body::-webkit-scrollbar {
     width: 5px;
 }
 
-/* Стиль для шляху полоси прокрутки тіла повідомлення картки */
 .msg_card_body::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
 
-/* Стиль для прокручувальної частини полоси прокрутки тіла повідомлення картки */
 .msg_card_body::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
 }
 
-/* Стиль для прокручувальної частини полоси прокрутки тіла повідомлення картки при наведенні */
 .msg_card_body::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.4);
 }
 
-/* Стиль для поведінки прокрутки тіла повідомлення картки */
+/* Стиль для плавного прокручування */
 .msg_card_body {
     scroll-behavior: smooth;
 }
@@ -188,13 +185,13 @@ body, html {
     height: calc(80vh - 120px);
 }
 
-/* Стиль для-disabled кнопки */
+/* Стиль для виключеної кнопки */
 .disabled-btn {
     pointer-events: none;
     opacity: 0.5;
 }
 
-/* Стиль для меню вибору */
+/* Стиль для спадного меню */
 .dropdown-menu {
     background-color: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -204,7 +201,7 @@ body, html {
     overflow-y: auto;
 }
 
-/* Стиль для елемента вибору */
+/* Стиль для елемента спадного меню */
 .dropdown-item {
     color: #f8f9fa;
     background-color: rgba(0, 0, 0, 0.4);
@@ -217,20 +214,20 @@ body, html {
     white-space: nowrap;
 }
 
-/* Стиль для елемента вибору при наведенні */
+/* Стиль для елемента спадного меню при наведенні */
 .dropdown-item:hover, .dropdown-item:focus {
     color: #f8f9fa;
     background-color: rgba(0, 0, 0, 0.6);
 }
 
-/* Стиль для тексту елемента вибору */
+/* Стиль для тексту елемента спадного меню */
 .dropdown-item-text {
     color: #f8f9fa;
     font-weight: bold;
     padding: 0.25rem 1.5rem;
 }
 
-/* Стиль для кнопки вибору */
+/* Стиль для переключення спадного меню */
 .dropdown-toggle {
     background-color: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -239,18 +236,16 @@ body, html {
     transition: background-color 0.3s ease;
 }
 
-/* Стиль для кнопки вибору при наведенні */
+/* Стиль для переключення спадного меню при наведенні */
 .dropdown-toggle:hover, .dropdown-toggle:focus {
     background-color: rgba(0, 0, 0, 0.6);
     border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Стиль для іконки кнопки вибору */
 .dropdown-toggle::after {
     display: none;
 }
 
-/* Стиль для іконки кнопки вибору */
 .dropdown-toggle:after {
     content: '\f107';
     font-family: 'Font Awesome 6 Free';
@@ -260,47 +255,44 @@ body, html {
     margin-left: 0.5em;
 }
 
-/* Стиль для списку меню вибору */
+/* Стиль для списку спадного меню */
 .dropdown-menu ul {
     list-style-type: none;
     padding-left: 0;
 }
 
-/* Стиль для елементів списку меню вибору */
+/* Стиль для елементів списку спадного меню */
 .dropdown-menu ul li {
     padding: 0.25rem 1.5rem;
 }
 
-/* Стиль для посилань елементів списку меню вибору */
+/* Стиль для посилань елементів списку спадного меню */
 .dropdown-menu ul li a {
     color: #f8f9fa;
     text-decoration: none;
 }
 
-/* Стиль для посилань елементів списку меню вибору при наведенні */
+/* Стиль для посилань елементів списку спадного меню при наведенні */
 .dropdown-menu ul li a:hover {
     color: #f8f9fa;
     background-color: rgba(0, 0, 0, 0.6);
 }
 
-/* Стиль для полоси прокрутки меню вибору */
+/* Стилі для скроллбара спадного меню */
 .dropdown-menu::-webkit-scrollbar {
     width: 5px;
 }
 
-/* Стиль для шляху полоси прокрутки меню вибору */
 .dropdown-menu::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
 
-/* Стиль для прокручувальної частини полоси прокрутки меню вибору */
 .dropdown-menu::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
 }
 
-/* Стиль для прокручувальної частини полоси прокрутки меню вибору при наведенні */
 .dropdown-menu::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.4);
 }

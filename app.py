@@ -28,7 +28,7 @@ models = {provider: next(iter(models)) for provider, models in models_dict.items
 # Історія бесід для кожної моделі кожного провайдера
 conversation_histories = {provider: {model: [] for model in models} for provider, models in models_dict.items()}
 
-MAX_TOKENS = 4000  # Максимальна кількість токенів для історії
+MAX_TOKENS = 4000  # Максимальна кількість токенів для історії чату
 
 # Ініціалізація клієнтів для різних API
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))  # Клієнт OpenAI
@@ -65,7 +65,7 @@ def chat(path):
     """Обробка POST запитів для чату."""
     parts = path.split('/', 1)  # Розбиваємо path на провайдера та модель
     if len(parts) != 2:
-        return jsonify({"response": "Invalid path format"}), 400  # Повертаємо помилку, якщо формат невірний
+        return jsonify({"response": "Invalid path format"}), 400  # Повертаємо помилку, якщо формат неправильний
 
     provider = urllib.parse.unquote(parts[0])  # Декодуємо провайдера
     model = urllib.parse.unquote(parts[1])  # Декодуємо модель
@@ -85,14 +85,14 @@ def chat(path):
                 temperature=0.7
             )
             model_response = completion.choices[0].message.content  # Отримуємо відповідь
-            prompt_tokens = completion.usage.prompt_tokens  # Кількість токенів у prompt
+            prompt_tokens = completion.usage.prompt_tokens  # Кількість токенів
 
         elif provider == 'Google API':
             # Підготовка повідомлення для Google Gemini
             google_message = "\n".join([msg["content"] for msg in history])
             response = google_model.generate_content(google_message)  # Відправляємо запит
             model_response = response.text  # Отримуємо текст відповіді
-            prompt_tokens = len(google_message.split())  # Оцінюємо кількість токенів
+            prompt_tokens = len(google_message.split())  # Оцінюємо приблизну кількість токенів
 
         elif provider == 'Anthropic API':
             # Підготовка повідомлення для Anthropic API
@@ -108,17 +108,17 @@ def chat(path):
                 messages=anthropic_messages
             )
             model_response = response.content[0].text  # Отримуємо текст відповіді
-            prompt_tokens = len(str(anthropic_messages).split())  # Оцінюємо кількість токенів
+            prompt_tokens = len(str(anthropic_messages).split())  # Оцінюємо приблизну кількість токенів
 
         elif provider == 'LM Studio':
-            # Відправляємо запит до LM Studio API
+            # Відправляємо запит до LM Studio
             completion = lmstudio_client.chat.completions.create(
                 model=model,
                 messages=history,
                 temperature=0.7
             )
             model_response = completion.choices[0].message.content  # Отримуємо відповідь
-            prompt_tokens = completion.usage.prompt_tokens  # Кількість токенів у prompt
+            prompt_tokens = completion.usage.prompt_tokens  # Кількість токенів
 
         elif provider == 'VectorShift API':
             # Підготовка повідомлення для VectorShift API
@@ -141,13 +141,13 @@ def chat(path):
             prompt_tokens = len(vectorshift_message.split())  # Оцінюємо кількість токенів
 
         elif provider == 'Ollama':
-            # Підготовка повідомлення для Ollama API
+            # Підготовка повідомлення для Ollama
             ollama_message = "\n".join([msg["content"] for msg in history])
             data = {
                 "model": model,
                 "prompt": ollama_message
             }
-            # Відправляємо запит до Ollama API
+            # Відправляємо запит до Ollama
             response = requests.post(OLLAMA_URL, json=data, stream=True)
             # Об'єднуємо всі частини відповіді
             full_response = "".join(
@@ -156,7 +156,7 @@ def chat(path):
                 if line
             )
             model_response = full_response  # Отримуємо текст відповіді
-            prompt_tokens = len(ollama_message.split())  # Оцінюємо кількість токенів
+            prompt_tokens = len(ollama_message.split())  # Оцінюємо приблизну кількість токенів
 
         elif provider == 'Groq API':
             # Підготовка повідомлення для Groq API
@@ -170,21 +170,21 @@ def chat(path):
                 model=model,
             )
             model_response = chat_completion.choices[0].message.content  # Отримуємо текст відповіді
-            prompt_tokens = len(str(groq_messages).split())  # Оцінюємо кількість токенів
+            prompt_tokens = len(str(groq_messages).split())  # Оцінюємо приблизну кількість токенів
 
         # Обрізаємо історію, якщо вона перевищує ліміт токенів
         trim_history(history, MAX_TOKENS, prompt_tokens)
 
-        # Додаємо відповідь моделі до історії
+        # Додаємо відповідь моделі до історії чату
         history.append({"role": "assistant", "content": model_response})
 
-        return jsonify({"response": model_response})  # Повертаємо відповідь користувачеві
+        return jsonify({"response": model_response})  # Повертаємо відповідь користувачу
 
     except Exception as e:
         print(f"Error with {provider}: {str(e)}")  # Виводимо помилку в консоль
         return jsonify({
             "response": f"Вибачте, сталася помилка при обробці запиту. Спробуйте ще раз пізніше."
-        }), 500  # Повертаємо помилку користувачеві
+        }), 500  # Повертаємо помилку користувачу
 
 
 if __name__ == '__main__':
