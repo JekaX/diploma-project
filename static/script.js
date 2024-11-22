@@ -1,131 +1,135 @@
-let chatHistories = {};
+let chatHistories = {}; // Об'єкт для зберігання історії чату для кожного постачальника та моделі
 
-let currentProvider = null;
-let currentModel = null;
-let isWaitingForResponse = false;
+let currentProvider = null; // Поточний постачальник чату
+let currentModel = null; // Поточна модель чату
+let isWaitingForResponse = false; // Флаг, який запобігає відправці багатьох повідомлень одночасно
 
 function addMessage(message, isUser = false, provider = currentProvider, model = currentModel) {
-    const messageData = {
+    const messageData = { // Об'єкт даних повідомлення
         message: message,
         isUser: isUser,
-        time: new Date().toLocaleTimeString()
+        time: new Date().toLocaleTimeString() // Поточний час
     };
 
-    if (!chatHistories[provider]) {
+    if (!chatHistories[provider]) { // Якщо постачальника немає в історії, додаємо його
         chatHistories[provider] = {};
     }
-    if (!chatHistories[provider][model]) {
+    if (!chatHistories[provider][model]) { // Якщо моделі немає в історії постачальника, додаємо її
         chatHistories[provider][model] = [];
     }
 
-    chatHistories[provider][model].push(messageData);
-    displayMessage(messageData);
+    chatHistories[provider][model].push(messageData); // Додаємо повідомлення до історії
+    displayMessage(messageData); // Відображаємо повідомлення
 }
 
-function displayMessage(messageData) {
-    const messageContainer = $('<div>').addClass('d-flex mb-4 ' + (messageData.isUser ? 'justify-content-end' : 'justify-content-start'));
-    const messageContent = $('<div>').addClass(messageData.isUser ? 'msg_container_send' : 'msg_container').text(messageData.message);
-    const timeSpan = $('<span>').addClass(messageData.isUser ? 'msg_time_send' : 'msg_time').text(messageData.time);
+function displayMessage(messageData) { // Функція для відображення одного повідомлення
+    const messageContainer = $('<div>') // Створюємо контейнер для повідомлення
+        .addClass('d-flex mb-4 ' + (messageData.isUser ? 'justify-content-end' : 'justify-content-start'));
+    const messageContent = $('<div>') // Створюємо контент повідомлення
+        .addClass(messageData.isUser ? 'msg_container_send' : 'msg_container')
+        .text(messageData.message);
+    const timeSpan = $('<span>') // Створюємо елемент для часу
+        .addClass(messageData.isUser ? 'msg_time_send' : 'msg_time')
+        .text(messageData.time);
 
-    messageContent.append(timeSpan);
-    messageContainer.append(messageContent);
-    $('#messageFormeight').append(messageContainer);
+    messageContent.append(timeSpan); // Додаємо час до контенту
+    messageContainer.append(messageContent); // Додаємо контент до контейнера
+    $('#messageFormeight').append(messageContainer); // Додаємо контейнер до області повідомлень
 
-    $('#messageFormeight').scrollTop($('#messageFormeight')[0].scrollHeight);
+    $('#messageFormeight').scrollTop($('#messageFormeight')[0].scrollHeight); // Скролл до нижнього краю
 }
 
-function displayChatHistory(provider, model) {
-    $('#messageFormeight').empty();
-    if (chatHistories[provider] && chatHistories[provider][model]) {
-        chatHistories[provider][model].forEach(messageData => {
-            displayMessage(messageData);
+function displayChatHistory(provider, model) { // Відображає історію чату для вибраного постачальника та моделі
+    $('#messageFormeight').empty(); // Очищаємо область повідомлень
+    if (chatHistories[provider] && chatHistories[provider][model]) { // Якщо історія існує
+        chatHistories[provider][model].forEach(messageData => { // Проходимо по всіх повідомленнях
+            displayMessage(messageData); // Відображаємо кожне повідомлення
         });
     }
-    $('#messageFormeight').scrollTop($('#messageFormeight')[0].scrollHeight);
+    $('#messageFormeight').scrollTop($('#messageFormeight')[0].scrollHeight); // Скролл до нижнього краю
 }
 
-$(document).ready(function () {
-    $('#modelDropdown').text('Вибрати модель');
+$(document).ready(function () { // При завантаженні документу
+    $('#modelDropdown').text('Вибрати модель'); // Встановлюємо текст для меню вибору моделі
 
-    $('#modelDropdownMenu a').click(function (e) {
-        e.preventDefault();
-        if (isWaitingForResponse) return;
-        const provider = $(this).data('provider');
-        const model = $(this).data('model');
-        currentProvider = provider;
-        currentModel = model;
-        $('#modelDropdown').text(`${model} (${provider})`);
-        $('#selectModelPrompt').hide();
-        if (!chatHistories[currentProvider] || !chatHistories[currentProvider][currentModel] || chatHistories[currentProvider][currentModel].length === 0) {
-            addMessage(`Доброго дня! Я - модель ${model} (${(provider)}). Можете задати мені питання, яке Вас цікавить.`, false, currentProvider, currentModel);
+    $('#modelDropdownMenu a').click(function (e) { // При кліку на елемент меню
+        e.preventDefault(); // Забороняємо дефолтну дію
+        if (isWaitingForResponse) return; // Якщо очікуємо відповідь, нічого не робимо
+        const provider = $(this).data('provider'); // Отримуємо назву постачальника з даних елемента
+        const model = $(this).data('model'); // Отримуємо назву моделі з даних елемента
+        currentProvider = provider; // Встановлюємо поточного постачальника
+        currentModel = model; // Встановлюємо поточну модель
+        $('#modelDropdown').text(`${model} (${provider})`); // Оновлюємо текст меню
+        $('#selectModelPrompt').hide(); // Сховати prompt для вибору моделі
+        if (!chatHistories[currentProvider] || !chatHistories[currentProvider][currentModel] || chatHistories[currentProvider][currentModel].length === 0) { // Якщо історії немає
+            addMessage(`Доброго дня! Я - модель ${model} (${provider}). Можете задати мені питання, яке Вас цікавить.`, false, currentProvider, currentModel); // Додаємо початкове повідомлення
         }
-        displayChatHistory(currentProvider, currentModel);
+        displayChatHistory(currentProvider, currentModel); // Відображаємо історію чату
     });
 
-    $(document).on('click', function (e) {
-        if (!$(e.target).closest('#modelDropdownMenu').length && !$(e.target).is('#modelDropdown')) {
-            $('#modelDropdownMenu').removeClass('show');
-        }
-    });
-
-    $(document).on('keydown', function (e) {
-        if (e.key === 'Escape') {
-            $('#modelDropdownMenu').removeClass('show');
+    $(document).on('click', function (e) { // При кліку по документу
+        if (!$(e.target).closest('#modelDropdownMenu').length && !$(e.target).is('#modelDropdown')) { // Якщо клік не був у меню
+            $('#modelDropdownMenu').removeClass('show'); // Сховати меню
         }
     });
 
-    $('#selectModelPrompt').show();
+    $(document).on('keydown', function (e) { // При натисканні клавіш
+        if (e.key === 'Escape') { // Якщо натиснута клавіша Escape
+            $('#modelDropdownMenu').removeClass('show'); // Сховати меню
+        }
+    });
+
+    $('#selectModelPrompt').show(); // Показати prompt для вибору моделі
 });
 
-$('#send-btn').click(sendMessage);
+$('#send-btn').click(sendMessage); // Зв'язати функцію відправки повідомлення з кнопкою
 
-$('#message').keypress(function (e) {
-    if (e.which == 13 && !e.shiftKey) {
-        sendMessage();
-        return false;
+$('#message').keypress(function (e) { // При натисканні клавіш в полі введення
+    if (e.which == 13 && !e.shiftKey) { // Якщо натиснута клавіша Enter і не нажатий Shift
+        sendMessage(); // Відправити повідомлення
+        return false; // Заборонити дефолтну дію
     }
 });
 
-function sendMessage() {
-    if (isWaitingForResponse || !currentProvider || !currentModel) {
-        return;
+function sendMessage() { // Функція відправки повідомлення користувача
+    if (isWaitingForResponse || !currentProvider || !currentModel) { // Якщо очікуємо відповідь або не вибраний постачальник/модель
+        return; // Нічого не робити
     }
 
-    const message = $('#message').val().trim();
+    const message = $('#message').val().trim(); // Отримати текст повідомлення
 
-    if (message) {
-        addMessage(message, true);
+    if (message) { // Якщо повідомлення не пусте
+        addMessage(message, true); // Додати повідомлення користувача до історії
+        isWaitingForResponse = true; // Встановити флаг очікування відповіді
+        disableDropdownAndSendButton(); // Дисабліввати меню та кнопку відправки
 
-        isWaitingForResponse = true;
-        disableDropdownAndSendButton();
-
-        $.ajax({
-            url: `/get/${encodeURIComponent(currentProvider)}/${encodeURIComponent(currentModel)}`,
+        $.ajax({ // Відправити AJAX POST запит
+            url: `/get/${encodeURIComponent(currentProvider)}/${encodeURIComponent(currentModel)}`, // Кодування назви постачальника та моделі в URL
             type: 'POST',
-            data: {msg: message},
-            success: function (response) {
-                addMessage(response.response);
-                isWaitingForResponse = false;
-                enableDropdownAndSendButton();
+            data: {msg: message}, // Відправити дані повідомлення
+            success: function (response) { // При успішній відповіді
+                addMessage(response.response); // Додати текст відповіді
+                isWaitingForResponse = false; // Скинути флаг очікування
+                enableDropdownAndSendButton(); // Включити меню та кнопку відправки
             },
-            error: function () {
-                addMessage("Вибачте, сталася помилка. Спробуйте ще раз пізніше.", false);
-                isWaitingForResponse = false;
-                enableDropdownAndSendButton();
+            error: function () { // При помилці
+                addMessage("Вибачте, сталася помилка. Спробуйте ще раз пізніше.", false); // Додати текст помилки
+                isWaitingForResponse = false; // Скинути флаг очікування
+                enableDropdownAndSendButton(); // Включити меню та кнопку відправки
             }
         });
 
-        $('#message').val('');
+        $('#message').val(''); // Очистити поле введення
     }
 }
 
-function disableDropdownAndSendButton() {
+function disableDropdownAndSendButton() { // Функція відключає меню та кнопку відправки
     $('#modelDropdown').addClass('disabled-btn');
     $('#send-btn').addClass('disabled-btn');
     $('#message').prop('disabled', true);
 }
 
-function enableDropdownAndSendButton() {
+function enableDropdownAndSendButton() { // Функція увімкнути меню та кнопку відправки
     $('#modelDropdown').removeClass('disabled-btn');
     $('#send-btn').removeClass('disabled-btn');
     $('#message').prop('disabled', false);

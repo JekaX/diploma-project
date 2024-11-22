@@ -1,29 +1,35 @@
+/* Стиль для body та html */
 body, html {
     height: 100%;
     margin: 0;
     background: linear-gradient(109.6deg, rgb(0, 0, 0) 11.2%, rgb(11, 132, 145) 91.1%);
 }
 
+/* Стиль для картки */
 .card {
     height: 800px;
     border-radius: 15px !important;
     background-color: rgba(0, 0, 0, 0.4) !important;
 }
 
+/* Стиль для тіла повідомлення картки */
 .msg_card_body {
     overflow-y: auto;
 }
 
+/* Стиль для заголовка картки */
 .card-header {
     border-radius: 15px 15px 0 0 !important;
     border-bottom: 0 !important;
 }
 
+/* Стиль для підвалу картки */
 .card-footer {
     border-radius: 0 0 15px 15px !important;
     border-top: 0 !important;
 }
 
+/* Стиль для поля введення повідомлення */
 .type_msg {
     background-color: rgba(0, 0, 0, 0.3) !important;
     border: 0 !important;
@@ -32,11 +38,13 @@ body, html {
     overflow-y: auto;
 }
 
+/* Стиль для поля введення повідомлення при фокусі */
 .type_msg:focus {
     box-shadow: none !important;
     outline: 0px !important;
 }
 
+/* Стиль для кнопки відправки */
 .send_btn {
     border-radius: 0 15px 15px 0 !important;
     background-color: rgba(0, 0, 0, 0.3) !important;
@@ -45,47 +53,52 @@ body, html {
     cursor: pointer;
 }
 
-/* Стиль для іконки відправки */
+/* Стиль для іконки кнопки відправки */
 .send_btn i {
     color: white;
     font-size: 1.2rem;
 }
 
+/* Стиль для іконки кнопки відправки при наведенні */
 .send_btn:hover i {
     transform: scale(1.1);
     transition: transform 0.2s ease;
 }
 
+/* Стиль для зображення користувача */
 .user_img {
     height: 70px;
     width: 70px;
     border: 1.5px solid #f5f6fa;
-
 }
 
+/* Стиль для контейнера зображення */
 .img_cont {
     position: relative;
     height: 70px;
     width: 70px;
 }
 
-
+/* Стиль для інформації про користувача */
 .user_info {
     margin-top: auto;
     margin-bottom: auto;
     margin-left: 15px;
 }
 
+/* Стиль для імені користувача */
 .user_info span {
     font-size: 20px;
     color: white;
 }
 
+/* Стиль для підпису користувача */
 .user_info p {
     font-size: 10px;
     color: rgba(255, 255, 255, 0.6);
 }
 
+/* Стиль для контейнера повідомлень */
 .msg_container {
     margin-top: auto;
     margin-bottom: auto;
@@ -96,6 +109,7 @@ body, html {
     position: relative;
 }
 
+/* Стиль для контейнера відправленого повідомлення */
 .msg_container_send {
     margin-top: auto;
     margin-bottom: auto;
@@ -106,6 +120,7 @@ body, html {
     position: relative;
 }
 
+/* Стиль для часу повідомлення */
 .msg_time {
     position: absolute;
     left: 0;
@@ -114,6 +129,7 @@ body, html {
     font-size: 10px;
 }
 
+/* Стиль для часу відправленого повідомлення */
 .msg_time_send {
     position: absolute;
     right: 0;
@@ -122,99 +138,63 @@ body, html {
     font-size: 10px;
 }
 
+/* Стиль для контейнерів повідомлень */
 .msg_container, .msg_container_send {
-    word-wrap: break-word; /* Перенос слів на наступний рядок */
-    word-break: break-word; /* Дозволяє розривати слова, які не поміщаються */
-    max-width: 80%; /* Обмежує ширину повідомлення, щоб виглядало акуратніше */
-    display: inline-flex; /* Використовуємо flexbox для вирівнювання дати */
-    justify-content: space-between; /* Дата і текст залишаються в одному рядку */
-    align-items: center; /* Вирівнюємо елементи по вертикалі */
+    word-wrap: break-word;
+    word-break: break-word;
+    max-width: 80%;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* Стилі для дати */
+/* Стиль для часу повідомлень */
 .msg_time, .msg_time_send {
-    margin-left: 10px; /* Відступ дати від тексту */
-    white-space: nowrap; /* Забороняємо перенесення дати на новий рядок */
+    margin-left: 10px;
+    white-space: nowrap;
 }
 
-/* Стилі для кастомного скроллбара */
+/* Стиль для полоси прокрутки тіла повідомлення картки */
 .msg_card_body::-webkit-scrollbar {
     width: 5px;
 }
 
+/* Стиль для шляху полоси прокрутки тіла повідомлення картки */
 .msg_card_body::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
 
+/* Стиль для прокручувальної частини полоси прокрутки тіла повідомлення картки */
 .msg_card_body::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
 }
 
+/* Стиль для прокручувальної частини полоси прокрутки тіла повідомлення картки при наведенні */
 .msg_card_body::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.4);
 }
 
-/* Забезпечуємо плавний скролл */
+/* Стиль для поведінки прокрутки тіла повідомлення картки */
 .msg_card_body {
     scroll-behavior: smooth;
 }
 
-/* Оновлюємо стилі для тіла повідомлень */
+/* Стиль для тіла повідомлення картки */
 .msg_card_body {
     overflow-y: auto;
     padding: 15px;
-    height: calc(80vh - 120px); /* Враховуємо висоту заголовка та футера */
+    height: calc(80vh - 120px);
 }
 
-/* Стилі для вкладок */
-.nav-tabs {
-    border-bottom: none;
-}
-
-.nav-tabs .nav-link {
-    color: rgba(255, 255, 255, 0.7);
-    border: none;
-    padding: 8px 20px;
-    border-radius: 8px;
-    margin-right: 10px;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-
-.nav-tabs .nav-link:hover {
-    color: white;
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.nav-tabs .nav-link.active {
-    color: white;
-    background-color: rgba(255, 255, 255, 0.2);
-    border: none;
-}
-
-.nav-item {
-    margin-right: 5px;
-}
-
-.nav-link {
-    padding: 8px 15px;
-    font-size: 0.9rem;
-}
-
-/* Відступ між вкладками та контентом header */
-.mt-3 {
-    margin-top: 1rem !important;
-}
-
-/* Додаємо стилі для неактивних вкладок та кнопки відправки */
+/* Стиль для-disabled кнопки */
 .disabled-btn {
     pointer-events: none;
     opacity: 0.5;
 }
 
-/* Стилі для dropdown */
+/* Стиль для меню вибору */
 .dropdown-menu {
     background-color: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -224,6 +204,7 @@ body, html {
     overflow-y: auto;
 }
 
+/* Стиль для елемента вибору */
 .dropdown-item {
     color: #f8f9fa;
     background-color: rgba(0, 0, 0, 0.4);
@@ -236,17 +217,20 @@ body, html {
     white-space: nowrap;
 }
 
+/* Стиль для елемента вибору при наведенні */
 .dropdown-item:hover, .dropdown-item:focus {
     color: #f8f9fa;
     background-color: rgba(0, 0, 0, 0.6);
 }
 
+/* Стиль для тексту елемента вибору */
 .dropdown-item-text {
     color: #f8f9fa;
     font-weight: bold;
     padding: 0.25rem 1.5rem;
 }
 
+/* Стиль для кнопки вибору */
 .dropdown-toggle {
     background-color: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -255,15 +239,18 @@ body, html {
     transition: background-color 0.3s ease;
 }
 
+/* Стиль для кнопки вибору при наведенні */
 .dropdown-toggle:hover, .dropdown-toggle:focus {
     background-color: rgba(0, 0, 0, 0.6);
     border-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Стиль для іконки кнопки вибору */
 .dropdown-toggle::after {
     display: none;
 }
 
+/* Стиль для іконки кнопки вибору */
 .dropdown-toggle:after {
     content: '\f107';
     font-family: 'Font Awesome 6 Free';
@@ -273,40 +260,47 @@ body, html {
     margin-left: 0.5em;
 }
 
+/* Стиль для списку меню вибору */
 .dropdown-menu ul {
     list-style-type: none;
     padding-left: 0;
 }
 
+/* Стиль для елементів списку меню вибору */
 .dropdown-menu ul li {
     padding: 0.25rem 1.5rem;
 }
 
+/* Стиль для посилань елементів списку меню вибору */
 .dropdown-menu ul li a {
     color: #f8f9fa;
     text-decoration: none;
 }
 
+/* Стиль для посилань елементів списку меню вибору при наведенні */
 .dropdown-menu ul li a:hover {
     color: #f8f9fa;
     background-color: rgba(0, 0, 0, 0.6);
 }
 
-/* Стилі для кастомного скроллбара в dropdown */
+/* Стиль для полоси прокрутки меню вибору */
 .dropdown-menu::-webkit-scrollbar {
     width: 5px;
 }
 
+/* Стиль для шляху полоси прокрутки меню вибору */
 .dropdown-menu::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.1);
     border-radius: 10px;
 }
 
+/* Стиль для прокручувальної частини полоси прокрутки меню вибору */
 .dropdown-menu::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
 }
 
+/* Стиль для прокручувальної частини полоси прокрутки меню вибору при наведенні */
 .dropdown-menu::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.4);
 }
